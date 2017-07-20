@@ -3,6 +3,8 @@ using Owin;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR;
+using Microsoft.Owin.Cors;
 
 namespace SignalrPlayground.Middleware
 {
@@ -19,6 +21,7 @@ namespace SignalrPlayground.Middleware
                 {
                     var appBuilder = new AppBuilder();
                     appBuilder.Properties["builder.DefaultApp"] = next;
+                    appBuilder.UseCors(CorsOptions.AllowAll);
 
                     configure(appBuilder);
 
@@ -31,7 +34,12 @@ namespace SignalrPlayground.Middleware
 
         public static void UseSignalR2(this IApplicationBuilder app)
         {
-            app.UseAppBuilder(appBuilder => appBuilder.MapSignalR());
+            var hubConfiguration = new HubConfiguration
+            {
+                EnableDetailedErrors = true,
+                EnableJSONP = true
+            };
+            app.UseAppBuilder(appBuilder => appBuilder.MapSignalR("/signalr", hubConfiguration));
         }
     }
 }
